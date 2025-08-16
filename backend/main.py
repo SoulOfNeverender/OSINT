@@ -26,6 +26,10 @@ class EnrichRequest(BaseModel):
 def health() -> dict:
     return {"status": "ok"}
 
+@app.get("/")
+def read_root():
+    return {"message": "OSINT Tool API is running!"}
+
 @app.post("/enrich")
 def enrich(req: EnrichRequest) -> Dict[str, Any]:
     t = req.type.lower().strip()
