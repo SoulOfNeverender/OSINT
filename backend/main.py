@@ -30,9 +30,9 @@ class Factor(BaseModel):
 
 # --- FastAPI App Initialization ---
 app = FastAPI(
-    title="OSINT AI Tool — Enhanced Backend",
-    version="0.2.1",
-    description="An enhanced backend with multiple data collectors and improved scoring.",
+    title="OSINT AI Tool — Multi-Page Backend",
+    version="0.3.0",
+    description="An enhanced backend that provides detailed data for multi-page frontend.",
 )
 
 app.add_middleware(
@@ -48,14 +48,15 @@ app.add_middleware(
 async def fetch_rdap_whois(domain: str) -> Dict[str, Any]:
     """Fetches domain registration data using python-whois as a fallback for RDAP."""
     try:
-        # Use a thread to run the synchronous whois library without blocking asyncio
         loop = asyncio.get_running_loop()
         w = await loop.run_in_executor(None, whois.whois, domain)
         
         if not w or not w.creation_date:
-            return {"error": "No registration data found."}
+            error_message = "No registration data found."
+            if domain.endswith('.edu'):
+                error_message += " (.edu domains use a specific registrar which can cause lookup issues.)"
+            return {"error": error_message}
             
-        # Handle cases where creation_date is a list
         creation_date = w.creation_date[0] if isinstance(w.creation_date, list) else w.creation_date
         expiration_date = w.expiration_date[0] if isinstance(w.expiration_date, list) else w.expiration_date
 
@@ -63,14 +64,18 @@ async def fetch_rdap_whois(domain: str) -> Dict[str, Any]:
             "registrar": w.registrar,
             "creation_date": creation_date.isoformat() if creation_date else None,
             "expiration_date": expiration_date.isoformat() if expiration_date else None,
+            "name_servers": list(w.name_servers) if w.name_servers else [],
+            "status": list(w.status) if w.status else [],
         }
     except Exception as e:
-        return {"error": f"WHOIS lookup failed: {str(e)}"}
+        error_message = f"WHOIS lookup failed."
+        if domain.endswith('.edu'):
+            error_message += " This may be due to the specialized .edu WHOIS server."
+        return {"error": error_message}
 
 async def fetch_crtsh(domain: str, client: httpx.AsyncClient) -> Dict[str, Any]:
     """Fetches certificate transparency logs from crt.sh."""
     try:
-        # OPTIMIZED: Increased timeout for large domains and added specific error handling.
         response = await client.get(f"https://crt.sh/?q=%25.{domain}&output=json", timeout=25.0)
         response.raise_for_status()
         
@@ -78,7 +83,11 @@ async def fetch_crtsh(domain: str, client: httpx.AsyncClient) -> Dict[str, Any]:
              return {"error": "crt.sh returned non-JSON response."}
 
         certs = response.json()
-        return {"count": len(certs), "issuers": list(set(c['issuer_name'] for c in certs))}
+        # ENHANCEMENT: Return the actual certificate data for the detail page
+        return {
+            "count": len(certs), 
+            "certs": certs
+        }
     except httpx.TimeoutException:
         return {"error": "Lookup timed out. This can happen with very large domains."}
     except json.JSONDecodeError:
@@ -97,10 +106,13 @@ async def fetch_otx(domain: str, client: httpx.AsyncClient) -> Dict[str, Any]:
         response = await client.get(url, headers=headers, timeout=10.0)
         response.raise_for_status()
         data = response.json()
-        return {"pulse_count": data.get("pulse_info", {}).get("count", 0)}
+        return {
+            "pulse_count": data.get("pulse_info", {}).get("count", 0),
+            "pulses": data.get("pulse_info", {}).get("pulses", []) # For detail page
+        }
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 404:
-            return {"pulse_count": 0} # Not found is not an error
+            return {"pulse_count": 0, "pulses": []}
         return {"error": f"OTX lookup failed: {str(e)}"}
     except Exception as e:
         return {"error": f"OTX lookup failed: {str(e)}"}
@@ -110,11 +122,10 @@ async def fetch_abuseipdb(domain: str, client: httpx.AsyncClient) -> Dict[str, A
     if not ABUSEIPDB_API_KEY or ABUSEIPDB_API_KEY == "YOUR_ABUSEIPDB_API_KEY":
         return {"error": "AbuseIPDB API key not configured."}
     try:
-        # Resolve domain to IP first
         ip_address = (await asyncio.get_event_loop().getaddrinfo(domain, None))[0][4][0]
         
         headers = {"Key": ABUSEIPDB_API_KEY, "Accept": "application/json"}
-        params = {"ipAddress": ip_address, "maxAgeInDays": "90"}
+        params = {"ipAddress": ip_address, "maxAgeInDays": "90", "verbose": True} # verbose for more details
         response = await client.get("https://api.abuseipdb.com/api/v2/check", headers=headers, params=params, timeout=10.0)
         response.raise_for_status()
         data = response.json().get("data", {})
@@ -122,6 +133,7 @@ async def fetch_abuseipdb(domain: str, client: httpx.AsyncClient) -> Dict[str, A
             "ip_address": ip_address,
             "abuse_score": data.get("abuseConfidenceScore", 0),
             "report_count": data.get("totalReports", 0),
+            "reports": data.get("reports", []) # For detail page
         }
     except Exception as e:
         return {"error": f"AbuseIPDB lookup failed: {str(e)}"}
@@ -133,7 +145,6 @@ def score_domain(features: Dict[str, Any]) -> (int, List[Dict[str, Any]]):
     score = 0
     factors = []
 
-    # RDAP/WHOIS scoring
     if features.get("rdap") and not features["rdap"].get("error"):
         created_str = features["rdap"].get("creation_date")
         if created_str:
@@ -143,24 +154,21 @@ def score_domain(features: Dict[str, Any]) -> (int, List[Dict[str, Any]]):
                 score += 30
                 factors.append({"factor": "Domain is less than 90 days old", "delta": 30})
 
-    # crt.sh scoring
     if features.get("crtsh") and not features["crtsh"].get("error"):
         if features["crtsh"].get("count", 0) < 1:
             score += 10
             factors.append({"factor": "No SSL certificates found", "delta": 10})
 
-    # OTX scoring
     if features.get("otx") and not features["otx"].get("error"):
         if features["otx"].get("pulse_count", 0) > 0:
             score += 40
             factors.append({"factor": "Associated with malware campaigns (OTX)", "delta": 40})
             
-    # AbuseIPDB scoring
     if features.get("abuseipdb") and not features["abuseipdb"].get("error"):
         abuse_score = features["abuseipdb"].get("abuse_score", 0)
         if abuse_score > 50:
             score += abuse_score
-            factors.append({"factor": f"High IP abuse score: {abuse_score}%", "delta": abuse_score})
+            factors.append({"factor": f"High IP abuse score: {abuse_score}%", "delta": int(abuse_score)})
 
     return min(score, 100), factors
 
@@ -190,23 +198,13 @@ async def enrich(req: EnrichRequest) -> Dict[str, Any]:
 
     rdap, crt, otx, abuseipdb = results
     
-    features = {
-        "rdap": rdap,
-        "crtsh": crt,
-        "otx": otx,
-        "abuseipdb": abuseipdb,
-    }
+    features = { "rdap": rdap, "crtsh": crt, "otx": otx, "abuseipdb": abuseipdb }
     score, factors = score_domain(features)
 
     return {
         "indicator": v,
         "type": t,
-        "data": {
-            "rdap": rdap,
-            "crtsh": crt,
-            "otx": otx,
-            "abuseipdb": abuseipdb,
-        },
+        "data": { "rdap": rdap, "crtsh": crt, "otx": otx, "abuseipdb": abuseipdb },
         "score": score,
         "factors": factors,
     }
