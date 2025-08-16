@@ -108,12 +108,6 @@ Frontend runs at: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-##  License
-
-This project is licensed under the **MIT License** – free to use and modify.
-
----
-
 ##  Contributions
 
 Contributions, feature requests, and issues are welcome! Feel free to open a PR or raise an issue.
