@@ -39,7 +39,7 @@ An **intelligent, full-stack OSINT (Open-Source Intelligence) tool** designed to
 
 ---
 
-## ⚙️ Setup & Installation
+##  Setup & Installation
 
 ### Backend Setup (FastAPI)
 
