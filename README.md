@@ -1,95 +1,107 @@
-# OSINT AI Tool — Starter Backend
+OSINT AI Dashboard
+An intelligent, full-stack OSINT (Open-Source Intelligence) tool designed to enrich and analyze domain names. This dashboard collects data from multiple sources, computes a dynamic risk score, and provides a clear, user-friendly interface for analysis.
 
-A minimal, **ready-to-run** FastAPI backend for an AI-enabled OSINT tool.
-Day 0 goal: enrich a **domain** using **RDAP** and **crt.sh**, return a **transparent threat score**, and expose `/enrich`.
+Features
+Multi-Source Data Collection: Gathers intelligence from four distinct sources:
 
----
+WHOIS: Public domain registration data.
 
-## 0) Prereqs
-- Python 3.10+
-- Git (optional but recommended)
+crt.sh: SSL/TLS certificate transparency logs.
 
----
+AlienVault OTX: Malware and malicious campaign associations.
 
-## 1) Get the code
-```bash
-# Linux / macOS / WSL
-unzip osint-ai-tool-starter.zip -d .
-cd osint-ai-tool/backend
-```
+AbuseIPDB: IP address reputation and abuse reports.
 
-On Windows (PowerShell):
-```powershell
-Expand-Archive -Path .\osint-ai-tool-starter.zip -DestinationPath .
-cd .\osint-ai-tool\backend
-```
+Dynamic Risk Scoring: An intelligent scoring engine that analyzes the collected data to produce a risk score from 0-100, with clear factors explaining the score.
 
-> If you cloned from GitHub instead of the zip, just `cd` into `backend`.
+Interactive Frontend: A responsive and intuitive user interface built with React and Tailwind CSS.
 
----
+Context-Aware Help: In-app popups explaining what each intelligence tool does and what its results mean.
 
-## 2) Create a virtual environment & install deps
-**Linux/macOS/WSL:**
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r ../requirements.txt
-```
+Robust Backend: A high-performance, asynchronous backend built with FastAPI (Python).
 
-**Windows (PowerShell):**
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r ..\requirements.txt
-```
+Tech Stack
+Area
 
----
+Technology
 
-## 3) Run the API
-```bash
-uvicorn main:app --reload --port 8000
-```
+Frontend
 
-Health check:
-```bash
-curl http://127.0.0.1:8000/health
-```
+React, Tailwind CSS
 
-Enrich a domain:
-```bash
-curl -X POST http://127.0.0.1:8000/enrich ^
-  -H "Content-Type: application/json" ^
-  -d "{\"type\":\"domain\",\"value\":\"example.com\"}"
-```
+Backend
 
-Linux/macOS equivalent:
-```bash
-curl -X POST http://127.0.0.1:8000/enrich   -H "Content-Type: application/json"   -d '{"type":"domain","value":"example.com"}'
-```
+FastAPI (Python), Uvicorn
 
-You should see JSON with `data.rdap`, `data.crtsh`, a `score`, and `factors`.
+Libraries
 
----
+httpx, python-whois
 
-## 4) Next Steps (today)
-- Add a new collector (AbuseIPDB or OTX) to `backend/collectors/` and wire it in `main.py`.
-- Commit to Git: `git init && git add . && git commit -m "starter backend"`
-- Push to GitHub.
+APIs
 
----
+crt.sh, AlienVault OTX, AbuseIPDB
 
-## File Tree
-```
-osint-ai-tool/
-├── .gitignore
-├── .env.example
-├── README.md
-├── requirements.txt
-└── backend/
-    ├── main.py
-    ├── scoring.py
-    └── collectors/
-        ├── __init__.py
-        ├── rdap.py
-        └── crtsh.py
-```
+Setup and Installation
+To get this project running locally, you'll need to set up both the backend server and the frontend application.
+
+1. Backend Setup (FastAPI)
+First, navigate to your backend directory.
+
+cd path/to/your/backend
+
+Install Dependencies:
+
+Create a virtual environment (optional but recommended) and install the required Python libraries.
+
+pip install fastapi "uvicorn[standard]" httpx python-whois
+
+Add API Keys:
+
+Open the main.py file and replace the placeholder API keys with your own:
+
+# main.py
+
+ABUSEIPDB_API_KEY = "YOUR_ABUSEIPDB_API_KEY"
+OTX_API_KEY = "YOUR_ALIENVAULT_OTX_API_KEY"
+
+Run the Server:
+
+Start the backend server.
+
+uvicorn main:app --reload
+
+The backend will now be running at http://127.0.0.1:8000.
+
+2. Frontend Setup (React)
+Next, navigate to your frontend directory in a new terminal.
+
+cd path/to/your/frontend
+
+Install Dependencies:
+
+If you are using a standard React setup with npm or yarn, install the project dependencies.
+
+npm install
+# or
+yarn install
+
+Run the Application:
+
+Start the frontend development server.
+
+npm start
+# or
+yarn start
+
+The frontend application will now be running, typically at http://localhost:3000, and will be able to communicate with your backend server.
+
+Usage
+Ensure both the backend and frontend servers are running.
+
+Open your web browser and navigate to the frontend application's URL.
+
+Enter a domain name (e.g., google.com, x.com) into the input field.
+
+Click the "Enrich Domain" button to fetch and display the intelligence data.
+
+Click the question mark icon (?) on any card to learn more about that specific data source.
