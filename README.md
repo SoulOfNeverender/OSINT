@@ -95,18 +95,6 @@ Click the ❓ icon on any card to learn more about that data source.
 📸 Demo (Optional)
 (Insert screenshots or GIFs of dashboard here)
 
-📜 License
-This project is licensed under the MIT License.
-
-pgsql
-Copy
-Edit
-
----
-
-This format is **professional, clean, and recruiter-friendly**—with emojis, tables, and code blocks to make it easy to follow.  
-
-Do you want me to also add an **“Architecture Diagram”** section (frontend ↔ backend ↔ APIs) so it looks like a *real SaaS-level project* in your README?
 
 
 
@@ -115,5 +103,6 @@ Do you want me to also add an **“Architecture Diagram”** section (frontend �
 
 
 
-Ask ChatGPT
+
+
 
