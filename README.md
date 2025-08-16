@@ -104,7 +104,16 @@ Frontend runs at: [http://localhost:3000](http://localhost:3000)
 
 ##  Preview
 
-*(Insert screenshots or demo GIFs here)*
+<img width="1080" height="606" alt="image" src="https://github.com/user-attachments/assets/92276d1f-78e4-4082-8707-261ea8c56e47" />
+
+<img width="1094" height="639" alt="image" src="https://github.com/user-attachments/assets/eefbe436-f22d-4b20-b6dd-822048572c62" />
+
+<img width="1049" height="654" alt="image" src="https://github.com/user-attachments/assets/34e2d5c2-8cb4-4e97-b2d9-f7de235925f3" />
+
+<img width="1094" height="639" alt="image" src="https://github.com/user-attachments/assets/dddd70ca-b2bf-41c2-8c79-4b64378ba7b7" />
+
+
+
 
 ---
 
