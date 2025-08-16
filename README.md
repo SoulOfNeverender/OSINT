@@ -1,11 +1,11 @@
-# 🔎 OSINT AI Dashboard  
+#  OSINT AI Dashboard  
 
 An intelligent, full-stack **OSINT (Open-Source Intelligence) tool** designed to enrich and analyze domain names.  
 This dashboard collects data from multiple sources, computes a dynamic risk score, and provides a clear, user-friendly interface for analysis.  
 
 ---
 
-## ✨ Features  
+##  Features  
 
 - **Multi-Source Data Collection**: Gathers intelligence from four distinct sources:  
   - **WHOIS**: Public domain registration data.  
@@ -23,7 +23,7 @@ This dashboard collects data from multiple sources, computes a dynamic risk scor
 
 ---
 
-## 🛠️ Tech Stack  
+##  Tech Stack  
 
 | Area       | Technology |
 |------------|------------|
@@ -34,7 +34,7 @@ This dashboard collects data from multiple sources, computes a dynamic risk scor
 
 ---
 
-## ⚡ Setup and Installation  
+##  Setup and Installation  
 
 ### 1. Backend Setup (FastAPI)  
 
