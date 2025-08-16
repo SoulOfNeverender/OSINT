@@ -1,150 +1,124 @@
-# 🔎 OSINT AI Dashboard  
+# OSINT AI Dashboard
 
-An **intelligent, full-stack OSINT (Open-Source Intelligence) platform** for enriching and analyzing domain names.  
-The system aggregates intelligence from multiple trusted sources, computes a **dynamic risk score**, and presents insights in a **clean, interactive dashboard**.  
-
----
-
-## 🚩 Key Features  
-
-- **Multi-Source Intelligence Collection**  
-  - **WHOIS**: Domain registration and ownership data  
-  - **crt.sh**: SSL/TLS certificate transparency logs  
-  - **AlienVault OTX**: Malware and threat campaign associations  
-  - **AbuseIPDB**: IP reputation and abuse reports  
-
-- **Dynamic Risk Scoring**  
-  - Weighted scoring engine (0–100)  
-  - Transparent breakdown of contributing risk factors  
-
-- **Interactive Dashboard**  
-  - Built with **React + Tailwind CSS**  
-  - Real-time enrichment results  
-  - Context-aware tooltips & documentation  
-
-- **Robust Backend**  
-  - Asynchronous API layer powered by **FastAPI**  
-  - High-performance event loop with **Uvicorn**  
-  - Modular design for integrating future data sources  
+An **intelligent, full-stack OSINT (Open-Source Intelligence) tool** designed to enrich and analyze domain names. This dashboard aggregates data from multiple intelligence sources, computes a **dynamic risk score**, and presents it in a clear, user-friendly interface.
 
 ---
 
-## 🛠️ Technology Stack  
+##  Features
 
-| Layer        | Technology / Tools |
-|--------------|---------------------|
-| **Frontend** | React, Tailwind CSS |
-| **Backend**  | FastAPI (Python), Uvicorn |
-| **Libraries**| httpx, python-whois |
-| **Data Sources** | crt.sh, AlienVault OTX, AbuseIPDB |
+- **Multi-Source Data Collection**
+  - **WHOIS**: Public domain registration data.
+  - **crt.sh**: SSL/TLS certificate transparency logs.
+  - **AlienVault OTX**: Malware and malicious campaign associations.
+  - **AbuseIPDB**: IP reputation and abuse reports.
+
+- **Dynamic Risk Scoring**
+  - Intelligent scoring engine generates a **0–100 risk score**.
+  - Transparent scoring with **clear contributing factors**.
+
+- **Interactive Frontend**
+  - Built with **React + Tailwind CSS**.
+  - Modern, responsive UI with intuitive workflows.
+
+- **Context-Aware Help**
+  - In-app **popups/tooltips** explaining what each intelligence tool does.
+
+- **Robust Backend**
+  - High-performance, asynchronous backend using **FastAPI + Uvicorn**.
 
 ---
 
-## ⚡ Installation & Setup  
+##  Tech Stack
 
-### Backend (FastAPI)  
+| Layer       | Technology                                  |
+|-------------|----------------------------------------------|
+| **Frontend** | React, Tailwind CSS                         |
+| **Backend**  | FastAPI (Python), Uvicorn                   |
+| **Libraries**| httpx, python-whois                         |
+| **APIs**     | crt.sh, AlienVault OTX, AbuseIPDB           |
+
+---
+
+## ⚙️ Setup & Installation
+
+### Backend Setup (FastAPI)
 
 ```bash
-# Navigate to backend
-cd backend
+# Navigate to backend directory
+cd path/to/your/backend
+
+# (Optional) Create a virtual environment
+python -m venv venv
+source venv/bin/activate  # For Linux/Mac
+venv\Scripts\activate     # For Windows
 
 # Install dependencies
 pip install fastapi "uvicorn[standard]" httpx python-whois
-Configuration
-Edit main.py and provide your API keys:
+```
 
-python
-Copy
-Edit
+#### Configure API Keys
+
+Edit `main.py` and replace placeholders with your keys:
+
+```python
 ABUSEIPDB_API_KEY = "YOUR_ABUSEIPDB_API_KEY"
-OTX_API_KEY = "YOUR_ALIENVAULT_OTX_API_KEY"
-Run the server
+OTX_API_KEY       = "YOUR_ALIENVAULT_OTX_API_KEY"
+```
 
-bash
-Copy
-Edit
+#### Run the Backend Server
+
+```bash
 uvicorn main:app --reload
-Backend runs at: http://127.0.0.1:8000
+```
 
-Frontend (React)
-bash
-Copy
-Edit
-# Navigate to frontend
-cd frontend
+Backend runs at: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+---
+
+### Frontend Setup (React)
+
+```bash
+# Navigate to frontend directory
+cd path/to/your/frontend
 
 # Install dependencies
 npm install   # or yarn install
-Run the application
 
-bash
-Copy
-Edit
+# Run development server
 npm start     # or yarn start
-Frontend runs at: http://localhost:3000
+```
 
-🚀 Usage Workflow
-Start both backend and frontend services
+Frontend runs at: [http://localhost:3000](http://localhost:3000)
 
-Access dashboard via http://localhost:3000
+---
 
-Input a domain (e.g., example.com)
+##  Usage
 
-Trigger enrichment → system fetches & analyzes data
+1. Ensure **both frontend and backend** are running.
+2. Open your browser at `http://localhost:3000`.
+3. Enter a domain name (e.g., `google.com`, `x.com`).
+4. Click **Enrich Domain** to fetch and analyze intelligence.
+5. Use the **info icons (?)** for explanations of each data source.
 
-View:
+---
 
-Domain WHOIS details
+##  Preview
 
-SSL/TLS certificate logs
+*(Insert screenshots or demo GIFs here)*
 
-Threat intelligence (OTX, AbuseIPDB)
+---
 
-Risk Score (0–100) with contributing factors
+##  License
 
-Use ❓ icons for in-app context explanations
+This project is licensed under the **MIT License** – free to use and modify.
 
-📸 Demo (Recommended to Add)
-Add screenshots or a short GIF walkthrough of:
+---
 
-Domain input
+##  Contributions
 
-Data cards loading
+Contributions, feature requests, and issues are welcome! Feel free to open a PR or raise an issue.
 
-Risk scoring visualization
-
-📐 Architecture Overview
-markdown
-Copy
-Edit
-User (Browser)
-      │
-      ▼
-Frontend (React + Tailwind)
-      │ (REST API calls)
-      ▼
-Backend (FastAPI + Uvicorn)
-      │
- ┌────┴───────────────────────────┐
- │   WHOIS    |   crt.sh          │
- │ AlienVault |   AbuseIPDB       │
- └────────────┴───────────────────┘
-      │
-      ▼
-Risk Scoring Engine → Dashboard Results
-📄 License
-This project is distributed under the MIT License.
-
-✅ Future Enhancements
-🔐 Integration with additional OSINT sources (Shodan, VirusTotal)
-
-📊 Risk trend analysis & reporting
-
-📥 Export results (PDF/CSV)
-
-🤖 AI-assisted remediation suggestions
-
-🏢 Team & multi-user support
+---
 
 
 
